@@ -93,23 +93,24 @@
   	$database = "dbs12553895";
 
     $conn = mysqli_connect($servername, $username, $password, $database);
+	
 
     if (isset($_POST['esborrar'])) {
         resertejarBaseDeDades($conn);
     }
   
-    if(isset($_POST['afegir'])){
-      if (isset($_POST['Usuari']) && !empty($_POST["Usuari"])) {
-        if (isset($_POST['Operand_1']) && !empty($_POST["Operand_1"]) && isset($_POST['Operand_2']) && !empty($_POST["Operand_2"])) {
-            comprovarIMostrar($conn);
+		if(isset($_POST['afegir'])){
+          if (isset($_POST['Usuari']) && !empty($_POST["Usuari"])) {
+        if (isset($_POST['Operand_1']) && !empty($_POST["Operand_1"]) && isset($_POST['Operand_2']) && !empty($_POST["Operand_2"])) {  
+          comprovarIMostrar($conn);
         } else {
             echo "<p style='text-align:center'>Els camps Operand_1 i Operand_2 són obligatoris</p>";
-          }
-  	} else {
-        echo "<p style='text-align:center'>El camp Usuari és obligatori</p>";
-    	  }
         }
-
+  	  	} else {
+        echo "<p style='text-align:center'>El camp Usuari és obligatori</p>";
+    	}
+        }
+    	
     function resertejarBaseDeDades($conn)
     {
  
@@ -120,7 +121,7 @@
         $result = mysqli_query($conn, $sql);
 
         if ($result) {
-            echo "<p style=text-align:center;>base de dades reiniciada correctament</p>";
+            echo "<p style=text-align:center;>Base de dades reiniciada correctament</p>";
         }
     }
 
@@ -129,39 +130,43 @@
         $operand1 = $_POST['Operand_1'];
         $operand2 = $_POST['Operand_2'];
         $operand3 = $_POST['Operand_3'];
-
-        if(empty($_POST['Operand_3'])){
-            $operand3 = null;
-        }
-	    
-            if (is_numeric($operand1) && is_numeric($operand2) && ((is_numeric($operand3)) || $operand3 == null)) {
+      	
+            if (is_numeric($operand1) && is_numeric($operand2) && ((is_numeric($operand3)) || empty($_POST['Operand_3']))) {
                 $operacio = "$operand1 + $operand2 + $operand3";
                 echo "<p style=text-align:center;> El resultat és " . ($operand1 + $operand2 + $operand3) . "</p>";
+                afegir($conn, $usuari, $operacio);
 
-            } else {
+            } else if(ctype_alnum($operand1) && ctype_alnum($operand2) && (ctype_alnum($operand3) || empty($_POST['Operand_3']))) {
                 $operacio = "$operand1$operand2$operand3";
                 echo "<p style='text-align:center'> El resultat és " . $operand1 . $operand2 . $operand3 . "</p>";
+                afegir($conn, $usuari, $operacio);
+              	
+            } else{
+                echo "<p style='text-align:center'> Els operands han de ser numérics o alfanumérics.</p>";
             }
+            
+    }
+      
+      function afegir($conn, $usuari, $operacio){
+                $sql = "USE dbs12553895";
+                $result = mysqli_query($conn, $sql);
     
-            $sql = "USE dbs12553895";
-            $result = mysqli_query($conn, $sql);
-    
-            $sql = "SELECT nom FROM operacions WHERE operacio = '$operacio'";
-            $result = mysqli_query($conn, $sql);
-            if (mysqli_num_rows($result) > 0) {
+                $sql = "SELECT nom FROM operacions WHERE operacio ='$operacio'";
+                $result = mysqli_query($conn, $sql);
                 if (mysqli_num_rows($result) > 0) {
+                    if (mysqli_num_rows($result) > 0) {
                     echo "<div style=text-align:center>";
                     while ($row = mysqli_fetch_assoc($result)) {
                         echo "L'usuari " . $row["nom"] . " ha fet aquesta operació amb anterioritat.<br>";
                     }
                     echo "</div>";
                 }
-            }
-            else {
+             }
+                else {
                 $sql = "INSERT INTO operacions(nom, operacio) VALUES ('$usuari', '$operacio')";
                 $result = mysqli_query($conn, $sql);
+                }
             }
-    }
 
     ?>
     </div>
