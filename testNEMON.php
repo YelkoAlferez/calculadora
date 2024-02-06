@@ -93,38 +93,22 @@
   	$database = "dbs12553895";
 
     $conn = mysqli_connect($servername, $username, $password, $database);
-	
-    crearBaseDades($conn);
 
     if (isset($_POST['esborrar'])) {
         resertejarBaseDeDades($conn);
     }
   
-		if(isset($_POST['afegir'])){
-          if (isset($_POST['Usuari']) && !empty($_POST["Usuari"])) {
+    if(isset($_POST['afegir'])){
+      if (isset($_POST['Usuari']) && !empty($_POST["Usuari"])) {
         if (isset($_POST['Operand_1']) && !empty($_POST["Operand_1"]) && isset($_POST['Operand_2']) && !empty($_POST["Operand_2"])) {
             comprovarIMostrar($conn);
         } else {
             echo "<p style='text-align:center'>Els camps Operand_1 i Operand_2 són obligatoris</p>";
-        }
-  	  	} else {
+          }
+  	} else {
         echo "<p style='text-align:center'>El camp Usuari és obligatori</p>";
-    	}
+    	  }
         }
-    	
-    
-    function crearBaseDades($conn)
-    {
-
-        $sql = "USE dbs12553895";
-        $result = mysqli_query($conn, $sql);
-
-        $sql = "CREATE TABLE IF NOT EXISTS operacions(
-            idUsuari INTEGER AUTO_INCREMENT PRIMARY KEY,
-            nom VARCHAR(50) NOT NULL,
-            operacio VARCHAR(100) NOT NULL)";
-        $result = mysqli_query($conn, $sql);
-    }
 
     function resertejarBaseDeDades($conn)
     {
@@ -149,6 +133,7 @@
         if(empty($_POST['Operand_3'])){
             $operand3 = null;
         }
+	    
             if (is_numeric($operand1) && is_numeric($operand2) && ((is_numeric($operand3)) || $operand3 == null)) {
                 $operacio = "$operand1 + $operand2 + $operand3";
                 echo "<p style=text-align:center;> El resultat és " . ($operand1 + $operand2 + $operand3) . "</p>";
